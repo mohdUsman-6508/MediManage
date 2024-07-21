@@ -10,7 +10,8 @@ import { Form } from "@/components/ui/form";
 import CustomFormField from "../CustomFormField";
 import CustomSubmitButton from "../CustomSubmitButton";
 import { useState } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import { createUser } from "@/lib/actions/patient.actions";
 
 export const enum FormFieldType {
   INPUT = "input",
@@ -32,7 +33,8 @@ const Patient = () => {
       phone: "",
     },
   });
-  // const router = useRouter();
+
+  const router = useRouter();
 
   async function onSubmit({
     fullname,
@@ -43,8 +45,9 @@ const Patient = () => {
     try {
       const userData = { fullname, email, phone };
       console.log(userData);
-      // const user = await createUser(userData);
-      // if (user) router.push(`/patients/${user.$id}/register`);
+      const user = await createUser(userData);
+      console.log("user created:", user);
+      if (user) router.push(`/patients/${user.$id}/register`);
     } catch (error) {
       console.log(error);
     } finally {
