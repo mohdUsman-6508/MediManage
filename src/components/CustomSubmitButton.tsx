@@ -2,6 +2,7 @@
 import React from "react";
 import { Button } from "./ui/button";
 import Image from "next/image";
+import { Loader } from "lucide-react";
 
 interface ButtonProps {
   isLoading: boolean;
@@ -21,14 +22,8 @@ const CustomSubmitButton = ({
       className={className ?? "shad-primary-btn w-full"}
     >
       {isLoading ? (
-        <div>
-          <Image
-            src="/icons/loader.svg"
-            alt="loader"
-            width={24}
-            height={24}
-            className="animate-spin"
-          />
+        <div className="flex gap-2 items-center justify-center">
+          <Loader className="animate-spin" />
           Loading...
         </div>
       ) : (
