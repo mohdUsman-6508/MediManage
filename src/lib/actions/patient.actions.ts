@@ -1,3 +1,5 @@
+"use server";
+
 import { ID, Query } from "node-appwrite";
 import { databases, storage, users } from "../appwrite.config";
 import { parseStringify } from "../utils";
@@ -30,6 +32,19 @@ export const getUser = async (userId: string) => {
   try {
     const user = await users.get(userId);
     return parseStringify(user);
+  } catch (error) {
+    console.log("Error get user:", error);
+  }
+};
+
+export const getPatient = async (userId: string) => {
+  try {
+    const patients = await databases.listDocuments(
+      "669bcfe6001223f07551",
+      "669bd03c00087086377d",
+      [Query.equal("userId", userId)]
+    );
+    return parseStringify(patients.documents[0]);
   } catch (error) {
     console.log("Error get user:", error);
   }
