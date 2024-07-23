@@ -1,7 +1,11 @@
 "use server";
 
 import { ID } from "node-appwrite";
-import { databases } from "../appwrite.config";
+import {
+  APPOINTMENT_COLLECTION_ID,
+  databases,
+  MEDIMANAGE_DATABASE_ID,
+} from "../appwrite.config";
 import { parseStringify } from "../utils";
 
 export const createAppointment = async (
@@ -23,4 +27,16 @@ export const createAppointment = async (
   } catch (error) {
     console.error("An error occurred while creating a new patient:", error);
   }
+};
+
+export const getAppointment = async (appointmentId: string) => {
+  try {
+    const appointment = await databases.getDocument(
+      MEDIMANAGE_DATABASE_ID!,
+      APPOINTMENT_COLLECTION_ID!,
+      appointmentId
+    );
+
+    return parseStringify(appointment);
+  } catch (error) {}
 };
