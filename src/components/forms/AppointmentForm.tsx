@@ -29,26 +29,37 @@ import { CreateAppointmentSchema } from "@/schemas/validationSchemas";
 import { Doctors } from "@/constants";
 import Image from "next/image";
 import { FormFieldType } from "./Patient";
-import { createAppointment } from "@/lib/actions/appointment.actions";
+import {
+  createAppointment,
+  updateAppointment,
+} from "@/lib/actions/appointment.actions";
+import { Appointment } from "@/types/appwrite.types";
+
+interface AppointmentParams {
+  userId: string;
+  patientId: string;
+  type: "create" | "schedule" | "cancel";
+  appointment?: Appointment;
+  setOpen: (open: boolean) => void;
+}
 
 const AppointmentForm = ({
   userId,
   patientId,
   type,
-}: {
-  userId: string;
-  patientId: string;
-  type: "create" | "schedule" | "cancel";
-}) => {
+  appointment,
+  setOpen,
+}: AppointmentParams) => {
   const [isLoading, setIsLoading] = useState(false);
+
   const form = useForm<z.infer<typeof CreateAppointmentSchema>>({
     resolver: zodResolver(CreateAppointmentSchema),
     defaultValues: {
-      primaryPhysician: "",
-      schedule: new Date(),
-      reason: "",
-      note: "",
-      cancellationReason: "",
+      primaryPhysician: appointment && appointment.primaryPhysician,
+      schedule: appointment ? new Date(appointment.schedule) : new Date(),
+      reason: appointment ? appointment.reason : "",
+      note: appointment ? appointment.note : "",
+      cancellationReason: appointment?.cancellationReason ?? "",
     },
   });
 
@@ -92,34 +103,56 @@ const AppointmentForm = ({
           reason: data.reason,
         };
         const appointment = await createAppointment(appointmentData);
-        console.log("appointmentcreate", appointment);
+
         if (appointment) {
           form.reset();
           router.push(
             `/patients/${userId}/new-appointment/success?appointmentId=${appointment.$id}`
           );
         }
+      } else {
+        const appointmentToUpdate = {
+          userId,
+          appointmentId: appointment?.$id!,
+          appointment: {
+            primaryPhysician: data?.primaryPhysician,
+            schedule: new Date(data?.schedule),
+            status: status as Status,
+            cancellationReason: data?.cancellationReason,
+          },
+          type,
+        };
+        const updatedAppointment = await updateAppointment(appointmentToUpdate);
+        if (updatedAppointment) {
+          setOpen && setOpen(false);
+          form.reset();
+        }
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
     <div className=" ">
       <Form {...form}>
-        <section className=" mb-12 space-y-4">
-          <h1 className="header"> Schedule Your Appointment</h1>
-          <p className="text-dark-700">
-            Take the Next Step Towards Better Health with MediManage
-          </p>
-        </section>
-        {type !== "cancel" && (
-          <>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-6 mt-10"
-            >
+        {type === "create" && (
+          <section className=" mb-12 space-y-4">
+            <h1 className="header"> Schedule Your Appointment</h1>
+            <p className="text-dark-700">
+              Take the Next Step Towards Better Health with MediManage
+            </p>
+          </section>
+        )}
+
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-6 mt-10"
+        >
+          {type !== "cancel" && (
+            <>
               <FormField
                 control={form.control}
                 name="primaryPhysician"
@@ -179,31 +212,27 @@ const AppointmentForm = ({
                 showTimeSelect
                 dateFormat="MM/dd/yyyy - h:mm aa"
               />
+            </>
+          )}
 
-              {
-                //@ts-ignore
-                type == "cancel" && (
-                  <CustomFormField
-                    control={form.control}
-                    fieldType={FormFieldType.TEXTAREA}
-                    name="cancellationReason"
-                    label="Reason for cancellation"
-                    placeholder="Enter reason for cancellation"
-                  />
-                )
-              }
-              <CustomSubmitButton
-                isLoading={isLoading}
-                className={`${
-                  //@ts-ignore
-                  type === "cancel" ? "shad-danger-btn" : "shad-primary-btn"
-                } w-full`}
-              >
-                {btnText}
-              </CustomSubmitButton>
-            </form>
-          </>
-        )}
+          {type == "cancel" && (
+            <CustomFormField
+              control={form.control}
+              fieldType={FormFieldType.TEXTAREA}
+              name="cancellationReason"
+              label="Reason for cancellation"
+              placeholder="Enter reason for cancellation"
+            />
+          )}
+          <CustomSubmitButton
+            isLoading={isLoading}
+            className={`${
+              type === "cancel" ? "shad-danger-btn" : "shad-primary-btn"
+            } w-full`}
+          >
+            {btnText}
+          </CustomSubmitButton>
+        </form>
       </Form>
     </div>
   );
