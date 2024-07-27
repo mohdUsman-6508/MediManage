@@ -7,6 +7,7 @@ import {
   useReactTable,
   getPaginationRowModel,
 } from "@tanstack/react-table";
+import Image from "next/image";
 
 import {
   Table,
@@ -34,11 +35,11 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
+    <div className="data-table">
+      <Table className="shad-table">
+        <TableHeader className="bg-dark-200">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className="shad-table-row-header">
               {headerGroup.headers.map((header) => {
                 return (
                   <TableHead key={header.id}>
@@ -60,6 +61,7 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className="shad-table-row"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -77,22 +79,35 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end space-x-2 py-4 px-4">
+      <div className="table-actions">
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
+          className="shad-gray-btn"
         >
-          Previous
+          <Image
+            src="/icons/arrow.svg"
+            alt="arrow button"
+            width={24}
+            height={24}
+          />
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
+          className="shad-gray-btn"
         >
-          Next
+          <Image
+            src="/icons/arrow.svg"
+            alt="arrow button"
+            width={24}
+            height={24}
+            className="rotate-180"
+          />
         </Button>
       </div>
     </div>
