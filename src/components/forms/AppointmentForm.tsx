@@ -40,7 +40,7 @@ interface AppointmentParams {
   patientId: string;
   type: "create" | "schedule" | "cancel";
   appointment?: Appointment;
-  setOpen: (open: boolean) => void;
+  setOpen?: (open: boolean) => void;
 }
 
 const AppointmentForm = ({
@@ -55,11 +55,13 @@ const AppointmentForm = ({
   const form = useForm<z.infer<typeof CreateAppointmentSchema>>({
     resolver: zodResolver(CreateAppointmentSchema),
     defaultValues: {
-      primaryPhysician: appointment && appointment.primaryPhysician,
-      schedule: appointment ? new Date(appointment.schedule) : new Date(),
+      primaryPhysician: appointment ? appointment.primaryPhysician : "",
+      schedule: appointment
+        ? new Date(appointment.schedule)
+        : new Date(Date.now()),
       reason: appointment ? appointment.reason : "",
       note: appointment ? appointment.note : "",
-      cancellationReason: appointment?.cancellationReason ?? "",
+      cancellationReason: appointment?.cancellationReason || "",
     },
   });
 

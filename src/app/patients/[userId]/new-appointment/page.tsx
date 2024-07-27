@@ -38,7 +38,7 @@ const page = async ({ params: { userId } }: SearchParamProps) => {
         </div>
       </section>
       <Image
-        src="/image/plussigns.jpeg"
+        src="/image/sa.jpeg"
         alt="nurse-welcoming"
         width={560}
         height={560}
