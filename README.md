@@ -79,13 +79,9 @@ Contributions are welcome! Please fork this repository and submit a pull request
 4. Push to the branch (`git push origin feature/your-feature`)
 5. Open a pull request
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
 ## Contact
 
-For any inquiries or support, please contact [your-email@example.com](mailto:your-email@example.com).
+For any inquiries or support, please contact [your-email@example.com](mailto:uk351675@gmail.com).
 
 ---
 
