@@ -38,8 +38,8 @@ export default function Home({ searchParams }: SearchParamProps) {
       <Image
         src="/image/greennurse.jpeg"
         alt="nurse-welcoming"
-        width={560}
-        height={560}
+        width={565}
+        height={565}
         className="side-img max-w-[50%] rounded-lg opacity-50"
       />
     </div>

@@ -5,14 +5,14 @@ import {
   APPOINTMENT_COLLECTION_ID,
   databases,
   MEDIMANAGE_DATABASE_ID,
+  messaging,
 } from "../appwrite.config";
-import { parseStringify } from "../utils";
+import { formatDateTime, parseStringify } from "../utils";
 import { revalidatePath } from "next/cache";
 
 export const createAppointment = async (
   appointmentData: CreateAppointmentParams
 ) => {
-  console.log("appointmentdata", appointmentData);
   try {
     const newPatient = await databases.createDocument(
       "669bcfe6001223f07551",
@@ -23,7 +23,6 @@ export const createAppointment = async (
       }
     );
 
-    console.log("user created :", newPatient);
     return parseStringify(newPatient);
   } catch (error) {
     console.error("An error occurred while creating a new patient:", error);
@@ -77,8 +76,6 @@ export const getRecentAppointmentList = async () => {
       documents: appointments.documents,
     };
 
-    console.log("DATA ::::::", data);
-
     return parseStringify(data);
   } catch (error) {
     console.log(error);
@@ -103,9 +100,43 @@ export const updateAppointment = async ({
       throw new Error("Appointment not found!");
     }
 
+    const smsMessage = `
+Hello!, it's MediManage
+
+${
+  type === "schedule"
+    ? `Your appointment with ${
+        appointment.primaryPhysician
+      } has been scheduled for ${
+        formatDateTime(appointment.schedule!).dateTime
+      }.`
+    : `We regret to inform you that your appointment has been cancelled for the following reason: ${appointment.cancellationReason}`
+}
+
+Thank you,
+MediManage
+`;
+
+    await sendSMSNotification(userId, smsMessage);
+
     revalidatePath("/admin");
     return parseStringify(updatedAppointment);
   } catch (error) {
     console.log("Error occured in updating appointment:", error);
+  }
+};
+
+export const sendSMSNotification = async (userId: string, content: string) => {
+  try {
+    const message = await messaging.createSms(
+      ID.unique(),
+      content,
+      [],
+      [userId]
+    );
+
+    return parseStringify(message);
+  } catch (error) {
+    console.log(error);
   }
 };

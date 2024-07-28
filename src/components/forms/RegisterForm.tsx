@@ -82,8 +82,6 @@ const RegisterForm = ({ user }: { user: User }) => {
         birthDate: new Date(data.birthDate),
         // identificationDocument: formData,
       };
-      console.log("new patient:", patientData);
-      console.log(data);
       // @ts-ignore
       const newPatient = await registerPatient(patientData);
       if (newPatient) {

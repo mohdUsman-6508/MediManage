@@ -6,9 +6,6 @@ import { parseStringify } from "../utils";
 
 export const createUser = async (user: CreateUserParams) => {
   try {
-    console.log("Creating user with email:", user.email);
-    console.log("Creating user with phone:", user.phone);
-    console.log("Creating user with fullname:", user.fullname);
     const newUser = await users.create(
       ID.unique(),
       user.email,
@@ -17,7 +14,6 @@ export const createUser = async (user: CreateUserParams) => {
       user.fullname
     );
 
-    console.log("NEW USER CREATED:", newUser);
     return newUser;
   } catch (error: any) {
     console.log(error);
@@ -83,8 +79,6 @@ export const registerPatient = async ({
         ...patient,
       }
     );
-
-    console.log("user created :", newPatient);
     return parseStringify(newPatient);
   } catch (error) {
     console.error("An error occurred while creating a new patient:", error);
